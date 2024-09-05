@@ -1,23 +1,35 @@
 import sys
 from PyQt5.QtCore import Qt, QRect, QUrl
 from PyQt5.QtGui import QIcon, QPainter, QImage, QBrush, QColor, QFont, QDesktopServices
-from PyQt5.QtWidgets import QApplication, QFrame, QStackedWidget, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QApplication, QFrame, QStackedWidget, QHBoxLayout, QLabel, QWidget
 
 from qfluentwidgets import (NavigationInterface, NavigationItemPosition, NavigationWidget, MessageBox,
                             isDarkTheme, setTheme, Theme, setThemeColor, qrouter, FluentWindow, NavigationAvatarWidget)
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, StandardTitleBar
 
+from gui.home import HomeScreen
 
 class Widget(QFrame):
-
-    def __init__(self, text: str, parent=None):
+    def __init__(self, arg=None, parent=None):
         super().__init__(parent=parent)
-        self.label = QLabel(text, self)
-        self.label.setAlignment(Qt.AlignCenter)
-        self.hBoxLayout = QHBoxLayout(self)
-        self.hBoxLayout.addWidget(self.label, 1, Qt.AlignCenter)
-        self.setObjectName(text.replace(' ', '-'))
+
+        if isinstance(arg, str):
+            # If the argument is a string, treat it as the text for the label
+            self.label = QLabel(arg, self)
+            self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.hBoxLayout = QHBoxLayout(self)
+            self.hBoxLayout.addWidget(self.label, 1, Qt.AlignmentFlag.AlignCenter)
+            self.setObjectName(arg.replace(' ', '-'))
+
+        elif isinstance(arg, QWidget):
+            # If the argument is a QWidget, treat it as a widget to add to the layout
+            self.hBoxLayout = QHBoxLayout(self)
+            self.hBoxLayout.addWidget(arg)
+
+        else:
+            # Handle the case where arg is neither a str nor a QWidget
+            raise TypeError("Argument must be a string or a QWidget")
 
 class Window(FramelessWindow):
 
@@ -34,8 +46,10 @@ class Window(FramelessWindow):
         self.navigationInterface = NavigationInterface(self, showMenuButton=True)
         self.stackWidget = QStackedWidget(self)
 
+        self.homewidget = HomeScreen()
+
         # create sub interface
-        self.homeInterface = Widget('Home Interface', self)
+        self.homeInterface = Widget(self.homewidget)
         self.projectInterface = Widget('Project Interface', self)
         self.draftsInterface = Widget('Drafts Interface', self)
         self.settingInterface = Widget('Setting Interface', self)
@@ -86,7 +100,6 @@ class Window(FramelessWindow):
     def initWindow(self):
         self.resize(900, 700)
         self.setWindowIcon(QIcon('gui\\images\\logo.png'))
-        # self.setWindowIcon(QIcon.fromTheme(QIcon().themeName()))
 
         self.setWindowTitle('ΛNN Architect')
         self.titleBar.setAttribute(Qt.WA_StyledBackground)
