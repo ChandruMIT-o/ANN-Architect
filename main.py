@@ -9,6 +9,7 @@ from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, StandardTitleBar
 
 from gui.home import HomeScreen
+from gui.drafts import DraftScreen
 
 class Widget(QFrame):
     def __init__(self, arg=None, parent=None):
@@ -40,18 +41,19 @@ class Window(FramelessWindow):
         setTheme(Theme.DARK)
 
         # change the theme color
-        # setThemeColor('#0078d4')
+        setThemeColor('#0078d4')
 
         self.hBoxLayout = QHBoxLayout(self)
         self.navigationInterface = NavigationInterface(self, showMenuButton=True)
         self.stackWidget = QStackedWidget(self)
 
         self.homewidget = HomeScreen()
+        self.draftScreen = DraftScreen()
 
         # create sub interface
         self.homeInterface = Widget(self.homewidget)
-        self.projectInterface = Widget('Project Interface', self)
-        self.draftsInterface = Widget('Drafts Interface', self)
+        self.projectInterface = Widget('Projects Interface', self)
+        self.draftsInterface = Widget(self.draftScreen)
         self.settingInterface = Widget('Setting Interface', self)
 
         # initialize layout
@@ -111,9 +113,14 @@ class Window(FramelessWindow):
         self.setQss()
 
     def addSubInterface(self, interface, icon, text: str, position=NavigationItemPosition.TOP, parent=None):
+        # Generate and assign a unique objectName based on the text if it's not already set
+        unique_name = text.replace(' ', '-').lower()
+        interface.setObjectName(unique_name)
+
+        # Add widget to stack and navigation interface
         self.stackWidget.addWidget(interface)
         self.navigationInterface.addItem(
-            routeKey=interface.objectName(),
+            routeKey=interface.objectName(),  # Use the object name as the route key
             icon=icon,
             text=text,
             onClick=lambda: self.switchTo(interface),
@@ -121,6 +128,7 @@ class Window(FramelessWindow):
             tooltip=text,
             parentRouteKey=parent.objectName() if parent else None
         )
+
 
     def setQss(self):
         color = 'dark' if isDarkTheme() else 'light'

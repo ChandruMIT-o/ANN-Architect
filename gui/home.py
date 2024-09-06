@@ -194,14 +194,16 @@ class HomeScreen(QWidget):
         
         self.hSearchLayout.addWidget(self.searchLineEdit)
         self.hSearchLayout.addWidget(self.searchButton)
-        self.hSearchLayout.setAlignment(Qt.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.hSearchLayout.setAlignment(Qt.AlignHCenter)
 
         self.projectCardWidget.setLayout(self.gridProjectsLayout)
         self.scroll_area.setWidget(self.projectCardWidget)
 
-        self.vBoxLayout.addWidget(self.createProjectButton, stretch=1, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-        self.vBoxLayout.addLayout(self.hSearchLayout, stretch=1)
-        self.vBoxLayout.addWidget(self.scroll_area, stretch=5, alignment=Qt.AlignmentFlag.AlignTop)
+        self.vBoxLayout.addWidget(self.createProjectButton, alignment=Qt.AlignHCenter)
+        self.vBoxLayout.addLayout(self.hSearchLayout)
+        self.vBoxLayout.addWidget(self.scroll_area)
+        self.vBoxLayout.setAlignment(Qt.AlignTop)
+        self.vBoxLayout.setSpacing(20)
 
         self.vBoxLayout.setContentsMargins(50, 50, 50, 50)
 
