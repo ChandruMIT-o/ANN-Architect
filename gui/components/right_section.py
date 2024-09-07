@@ -331,7 +331,7 @@ class RightSection(QWidget):
         self.vBoxLayout.addWidget(self.pivot)
         self.vBoxLayout.addWidget(self.stackedWidget)
         self.vBoxLayout.setAlignment(Qt.AlignRight)
-        self.vBoxLayout.setContentsMargins(30, 10, 30, 30)
+        self.vBoxLayout.setContentsMargins(10, 10, 10, 10)
 
         self.stackedWidget.setCurrentWidget(self.stackedWidget.widget(0))
         self.pivot.setCurrentItem('songInterface')

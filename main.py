@@ -10,6 +10,7 @@ from qframelesswindow import FramelessWindow, StandardTitleBar
 
 from gui.home import HomeScreen
 from gui.drafts import DraftScreen
+from gui.projects import ProjectsScreen
 
 class Widget(QFrame):
     def __init__(self, arg=None, parent=None):
@@ -49,10 +50,11 @@ class Window(FramelessWindow):
 
         self.homewidget = HomeScreen()
         self.draftScreen = DraftScreen()
+        self.projectsScreen = ProjectsScreen()
 
         # create sub interface
         self.homeInterface = Widget(self.homewidget)
-        self.projectInterface = Widget('Projects Interface', self)
+        self.projectInterface = Widget(self.projectsScreen)
         self.draftsInterface = Widget(self.draftScreen)
         self.settingInterface = Widget('Setting Interface', self)
 

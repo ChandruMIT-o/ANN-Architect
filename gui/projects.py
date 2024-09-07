@@ -1,13 +1,14 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QCompleter, QGridLayout, QScrollArea, QSizePolicy, QAction
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QCompleter, QGridLayout, QScrollArea, QSizePolicy, QAction, QSpacerItem
 from PyQt5.QtCore import Qt
-from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton, setTheme, Theme, CaptionLabel, SearchLineEdit,
+from qfluentwidgets import (MessageBoxBase, SubtitleLabel, DisplayLabel, PushButton, setTheme, Theme, CaptionLabel, SearchLineEdit,
                             IconWidget, CardWidget, BodyLabel, PillPushButton, FluentIcon, InfoBadge, InfoLevel, ToolButton, TransparentToolButton,
-                            TransparentDropDownToolButton, RoundMenu, PrimaryToolButton, TitleLabel)
+                            TransparentDropDownToolButton, RoundMenu, PrimaryToolButton)
 from qfluentwidgets import FluentIcon as FIF
 import sys
-from components.right_section import RightSection
-from components.code_gen_dialog import GeneratedCodeMessageBox
-from components.summary_gen_dialog import GeneratedSummaryMessageBox
+from gui.components.right_section import RightSection
+from gui.components.code_gen_dialog import GeneratedCodeMessageBox
+from gui.components.summary_gen_dialog import GeneratedSummaryMessageBox
+from gui.components.model_designer import ModelDesigner
 
 class ProjectsScreen(QWidget):
     def __init__(self):
@@ -18,9 +19,23 @@ class ProjectsScreen(QWidget):
         self.hBoxLayout = QHBoxLayout(self)
 
         self.modelBuildingSectionLayout = QVBoxLayout()
+        self.modelBuildingSectionLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.rightSectionLayout = QVBoxLayout()
-        self.modelBuildingSectionLayout.setAlignment(Qt.AlignBottom)
         self.rightSectionLayout.setAlignment(Qt.AlignTop)
+
+        self.titleLabel = SubtitleLabel("Deep CNN", self)
+        self.titleLabel.setStyleSheet("""QLabel{
+                font: 900 26px 'Segoe UI';
+                background: transparent;
+                border-radius: 8px;
+                color: white;
+                }
+                """)
+        
+        self.modelBuildingSectionLayout.addWidget(self.titleLabel)
+
+        self.modelDesigner = ModelDesigner()
+        self.modelBuildingSectionLayout.addWidget(self.modelDesigner, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.bottomButtonSectionLayout = QHBoxLayout()
         self.bottomButtonSectionLayout.setAlignment(Qt.AlignLeft | Qt.AlignBottom)
@@ -28,6 +43,7 @@ class ProjectsScreen(QWidget):
         self.codeGenerationButton.clicked.connect(self.showCodeDialog)
         self.summaryGenerationButton = PushButton("Summary", self, FIF.BOOK_SHELF)
         self.summaryGenerationButton.clicked.connect(self.showSummaryDialog)
+        self.saveProjectButton = PushButton("Save", self, FIF.SAVE)
         self.codeGenerationButton.setMaximumWidth(300)
         self.summaryGenerationButton.setMaximumWidth(300)
 
@@ -35,8 +51,15 @@ class ProjectsScreen(QWidget):
 
         self.bottomButtonSectionLayout.addWidget(self.codeGenerationButton)
         self.bottomButtonSectionLayout.addWidget(self.summaryGenerationButton)
+        vspacer = QSpacerItem(100000, 100000, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        self.bottomButtonSectionLayout.addItem(vspacer)
+        self.bottomButtonSectionLayout.addWidget(self.saveProjectButton, alignment=Qt.AlignmentFlag.AlignRight)
+
+        spacer = QSpacerItem(40, 100000, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        self.modelBuildingSectionLayout.addItem(spacer)
 
         self.modelBuildingSectionLayout.addLayout(self.bottomButtonSectionLayout)
+
         self.rightSectionLayout.addWidget(self.rightSection)
 
         self.hBoxLayout.addLayout(self.modelBuildingSectionLayout,2)
