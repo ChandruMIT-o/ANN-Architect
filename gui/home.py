@@ -10,19 +10,29 @@ from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton,
                             IconWidget, CardWidget, BodyLabel, PillPushButton, FluentIcon, InfoBadge, InfoLevel)
 from qfluentwidgets import FluentIcon as FIF
 
-class AppCard(CardWidget):
+class ProjectAppCard(CardWidget):
 
     def __init__(self, icon, title, content, parent=None):
-        super().__init__(parent)
+        super().__init__()
         self.iconWidget = IconWidget(icon)
         self.titleLabel = BodyLabel(title, self)
+        self.titleLabel.setObjectName("ProjectAppCardTitle")
+        self.titleLabel.setStyleSheet("""#ProjectAppCardTitle{
+                                        background: transparent; 
+                                        color: white;
+                                    }""")
         self.contentLabel = CaptionLabel(content, self)
+        self.contentLabel.setObjectName("ProjectAppCardContent")
+        self.contentLabel.setStyleSheet("""#ProjectAppCardContent{
+                                        background: transparent; 
+                                        color: white;
+                                    }""")
         self.openButton = PushButton('Clone', self)
         self.moreButton = PillPushButton(FluentIcon.HEART, "Fav", self)
 
-        self.architypeInfoBadge = InfoBadge("Architype: CNN", self, InfoLevel.INFOAMTION)
-        self.totalParametersInfoBadge = InfoBadge("Total Parameters: 1.2B", self, InfoLevel.INFOAMTION)
-
+        self.architypeInfoBadge = InfoBadge.info("Architype: CNN")
+        self.totalParametersInfoBadge = InfoBadge.attension("Total Parameters: 1.2B")
+        self.ownerInfoBadge = InfoBadge.warning("Rameez Akther")
 
         self.vCardLayout = QVBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
@@ -31,8 +41,7 @@ class AppCard(CardWidget):
         self.setFixedWidth(250)
         self.setFixedHeight(250)
 
-        self.iconWidget.setFixedSize(48, 48)
-        self.contentLabel.setTextColor("#606060", "#d2d2d2")
+        self.iconWidget.setFixedSize(32, 32)
         self.openButton.setFixedWidth(120)
 
         self.vCardLayout.setContentsMargins(20, 20, 20, 20)
@@ -45,6 +54,7 @@ class AppCard(CardWidget):
         self.vBoxLayout.addWidget(self.contentLabel, 0, Qt.AlignLeft)
         self.vBoxLayout.setAlignment(Qt.AlignVCenter)
         self.vCardLayout.addLayout(self.vBoxLayout)
+        self.vCardLayout.addWidget(self.ownerInfoBadge, 0, Qt.AlignLeft)
         self.vCardLayout.addWidget(self.architypeInfoBadge, 0, Qt.AlignLeft)
         self.vCardLayout.addWidget(self.totalParametersInfoBadge, 0, Qt.AlignLeft)
 
@@ -178,13 +188,12 @@ class HomeScreen(QWidget):
         
         self.gridProjectsLayout = QGridLayout()
         self.gridProjectsLayout.setAlignment(Qt.AlignCenter)
-        self.gridProjectsLayout.setHorizontalSpacing(20)
-        self.gridProjectsLayout.setVerticalSpacing(20)
+        self.gridProjectsLayout.setSpacing(30)
 
         for x in range(5):
             for y in range(5):
 
-                self.gridProjectsLayout.addWidget(AppCard(
+                self.gridProjectsLayout.addWidget(ProjectAppCard(
                     icon=":/qfluentwidgets/images/logo.png",
                     title="DEEP CNN Model",
                     content="Last Updated 3 days ago."
@@ -203,9 +212,9 @@ class HomeScreen(QWidget):
         self.vBoxLayout.addLayout(self.hSearchLayout)
         self.vBoxLayout.addWidget(self.scroll_area)
         self.vBoxLayout.setAlignment(Qt.AlignTop)
-        self.vBoxLayout.setSpacing(20)
+        self.vBoxLayout.setSpacing(30)
 
-        self.vBoxLayout.setContentsMargins(50, 50, 50, 50)
+        self.vBoxLayout.setContentsMargins(20, 50, 20, 20)
 
         self.createProjectButton.clicked.connect(self.showDialog)
 
@@ -248,6 +257,10 @@ if __name__ == '__main__':
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv)
+
+    with open("gui\styles\dark\main.qss", "r") as qss_file:
+        app.setStyleSheet(qss_file.read())
+
     w = HomeScreen()
     w.show()
     app.exec_()

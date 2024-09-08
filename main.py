@@ -11,6 +11,7 @@ from qframelesswindow import FramelessWindow, StandardTitleBar
 from gui.home import HomeScreen
 from gui.drafts import DraftScreen
 from gui.projects import ProjectsScreen
+from gui.settings import SettingsScreen
 
 class Widget(QFrame):
     def __init__(self, arg=None, parent=None):
@@ -42,7 +43,7 @@ class Window(FramelessWindow):
         setTheme(Theme.DARK)
 
         # change the theme color
-        setThemeColor('#0078d4')
+        # setThemeColor('#0078d4')
 
         self.hBoxLayout = QHBoxLayout(self)
         self.navigationInterface = NavigationInterface(self, showMenuButton=True)
@@ -51,12 +52,15 @@ class Window(FramelessWindow):
         self.homewidget = HomeScreen()
         self.draftScreen = DraftScreen()
         self.projectsScreen = ProjectsScreen()
+        self.settingsScreen = SettingsScreen()
 
         # create sub interface
         self.homeInterface = Widget(self.homewidget)
         self.projectInterface = Widget(self.projectsScreen)
         self.draftsInterface = Widget(self.draftScreen)
-        self.settingInterface = Widget('Setting Interface', self)
+        # self.draftsInterface = Widget("Drafts", self)
+        self.settingInterface = Widget(self.settingsScreen)
+        # self.settingInterface = Widget("settings", self)
 
         # initialize layout
         self.initLayout()
@@ -116,8 +120,8 @@ class Window(FramelessWindow):
 
     def addSubInterface(self, interface, icon, text: str, position=NavigationItemPosition.TOP, parent=None):
         # Generate and assign a unique objectName based on the text if it's not already set
-        unique_name = text.replace(' ', '-').lower()
-        interface.setObjectName(unique_name)
+        # unique_name = text.replace(' ', '-').lower()
+        interface.setObjectName(text)
 
         # Add widget to stack and navigation interface
         self.stackWidget.addWidget(interface)

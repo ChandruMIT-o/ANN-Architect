@@ -15,7 +15,8 @@ class ParametersSelectionMenuItem(CardWidget):
         self.hBoxLayout = QHBoxLayout(self)
 
         self.titleLabel = CaptionLabel(propertyName, self)
-        self.titleLabel.setStyleSheet("""QLabel{
+        self.titleLabel.setObjectName("ParametersSelectionMenuItemTitle")
+        self.titleLabel.setStyleSheet("""#ParametersSelectionMenuItemTitle{
                 font: 400 16px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;

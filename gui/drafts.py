@@ -6,17 +6,23 @@ from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton,
 from qfluentwidgets import FluentIcon as FIF
 import sys
 
-class VerticalCard(CardWidget):
+class VerticalDraftCard(CardWidget):
 
     def __init__(self, icon, title, content, parent=None, saved = False):
         super().__init__(parent)
         self.iconWidget = IconWidget(icon)
         self.titleLabel = BodyLabel(title, self)
+        self.titleLabel.setObjectName("VerticalDraftCardTitle")
+        self.titleLabel.setStyleSheet("""#VerticalDraftCardTitle{background: transparent; color: white}""")
         self.contentLabel = CaptionLabel(content, self)
+        self.contentLabel.setObjectName("VerticalDraftCardContent")
+        self.contentLabel.setStyleSheet("""#VerticalDraftCardContent{background: transparent; color: white}""")
         self.openButton = PushButton('Edit', self)
 
-        self.architypeInfoBadge = InfoBadge("Architype: CNN", self, InfoLevel.INFOAMTION)
-        self.totalParametersInfoBadge = InfoBadge("Total Parameters: 1.2B", self, InfoLevel.INFOAMTION)
+        self.architypeInfoBadge = InfoBadge.info("Architype: CNN")
+        self.architypeInfoBadge.setFixedHeight(22)
+        self.totalParametersInfoBadge = InfoBadge.attension("Total Parameters: 1.2B")
+        self.totalParametersInfoBadge.setFixedHeight(22)
 
         if saved:
             self.moreButton = PillPushButton(FluentIcon.PEOPLE, 'Publish')
@@ -33,9 +39,9 @@ class VerticalCard(CardWidget):
         self.hBoxLayout = QHBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
 
-        self.setFixedHeight(73)
-        self.iconWidget.setFixedSize(48, 48)
-        self.contentLabel.setTextColor("#606060", "#d2d2d2")
+        self.setFixedHeight(65)
+        self.iconWidget.setFixedSize(32, 32)
+        # self.contentLabel.setTextColor("#606060", "#d2d2d2")
         self.openButton.setFixedWidth(120)
 
         self.hBoxLayout.setContentsMargins(20, 11, 20, 11)
@@ -72,14 +78,17 @@ class DraftScreen(QWidget):
         self.setStyleSheet('DraftScreen{background:"#272727"}')
 
         self.vBoxLayout = QVBoxLayout(self)
-        self.title1 = TitleLabel("Saved")
-        self.title2 = TitleLabel("Draft")
+
+        self.title0 = TitleLabel("My Projects")
+        self.title1 = SubtitleLabel("Saved")
+        self.title2 = SubtitleLabel("Draft")
+        self.vBoxLayout.addWidget(self.title0)
         self.vBoxLayout.addWidget(self.title1)
         self.vBoxLayout.setAlignment(Qt.AlignTop)
 
         for x in range(2):
 
-            self.vBoxLayout.addWidget(VerticalCard(
+            self.vBoxLayout.addWidget(VerticalDraftCard(
                 icon=":/qfluentwidgets/images/logo.png",
                 title="DEEP CNN Model",
                 content="Last Updated 3 days ago.",
@@ -90,7 +99,7 @@ class DraftScreen(QWidget):
 
         for x in range(2):
 
-            self.vBoxLayout.addWidget(VerticalCard(
+            self.vBoxLayout.addWidget(VerticalDraftCard(
                 icon=":/qfluentwidgets/images/logo.png",
                 title="DEEP CNN Model",
                 content="Last Updated 3 days ago.",

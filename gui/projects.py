@@ -5,10 +5,17 @@ from qfluentwidgets import (MessageBoxBase, SubtitleLabel, DisplayLabel, PushBut
                             TransparentDropDownToolButton, RoundMenu, PrimaryToolButton)
 from qfluentwidgets import FluentIcon as FIF
 import sys
-from gui.components.right_section import RightSection
-from gui.components.code_gen_dialog import GeneratedCodeMessageBox
-from gui.components.summary_gen_dialog import GeneratedSummaryMessageBox
-from gui.components.model_designer import ModelDesigner
+
+if __name__ == '__main__':
+    from _right_section import RightSection
+    from _code_gen_dialog import GeneratedCodeMessageBox
+    from _summary_gen_dialog import GeneratedSummaryMessageBox
+    from _model_designer import ModelDesigner
+else:
+    from gui._right_section import RightSection
+    from gui._code_gen_dialog import GeneratedCodeMessageBox
+    from gui._summary_gen_dialog import GeneratedSummaryMessageBox
+    from gui._model_designer import ModelDesigner
 
 class ProjectsScreen(QWidget):
     def __init__(self):
