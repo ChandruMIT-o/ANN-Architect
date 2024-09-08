@@ -22,7 +22,8 @@ class LayerBar(CardWidget):
         self.statusButton.setDisabled(True)
 
         self.layerName = CaptionLabel(propertyName, self)
-        self.layerName.setStyleSheet("""QLabel{
+        self.layerName.setObjectName("layerNameLayerBar")
+        self.layerName.setStyleSheet("""#layerNameLayerBar{
                 font: 400 16px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;

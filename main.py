@@ -12,27 +12,14 @@ from gui.home import HomeScreen
 from gui.drafts import DraftScreen
 from gui.projects import ProjectsScreen
 from gui.settings import SettingsScreen
+from gui.sign_in_up import SignInUpDialog
 
 class Widget(QFrame):
     def __init__(self, arg=None, parent=None):
         super().__init__(parent=parent)
 
-        if isinstance(arg, str):
-            # If the argument is a string, treat it as the text for the label
-            self.label = QLabel(arg, self)
-            self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.hBoxLayout = QHBoxLayout(self)
-            self.hBoxLayout.addWidget(self.label, 1, Qt.AlignmentFlag.AlignCenter)
-            self.setObjectName(arg.replace(' ', '-'))
-
-        elif isinstance(arg, QWidget):
-            # If the argument is a QWidget, treat it as a widget to add to the layout
-            self.hBoxLayout = QHBoxLayout(self)
-            self.hBoxLayout.addWidget(arg)
-
-        else:
-            # Handle the case where arg is neither a str nor a QWidget
-            raise TypeError("Argument must be a string or a QWidget")
+        self.hBoxLayout = QHBoxLayout(self)
+        self.hBoxLayout.addWidget(arg)
 
 class Window(FramelessWindow):
 
@@ -49,27 +36,17 @@ class Window(FramelessWindow):
         self.navigationInterface = NavigationInterface(self, showMenuButton=True)
         self.stackWidget = QStackedWidget(self)
 
-        self.homewidget = HomeScreen()
-        self.draftScreen = DraftScreen()
-        self.projectsScreen = ProjectsScreen()
-        self.settingsScreen = SettingsScreen()
+        self.settingInterface = Widget(SettingsScreen())
+        self.homeInterface = Widget(HomeScreen(self))
+        self.draftsInterface = Widget(DraftScreen())
+        self.projectInterface = Widget(ProjectsScreen())
 
-        # create sub interface
-        self.homeInterface = Widget(self.homewidget)
-        self.projectInterface = Widget(self.projectsScreen)
-        self.draftsInterface = Widget(self.draftScreen)
-        # self.draftsInterface = Widget("Drafts", self)
-        self.settingInterface = Widget(self.settingsScreen)
-        # self.settingInterface = Widget("settings", self)
-
-        # initialize layout
         self.initLayout()
 
-        # add items to navigation interface
         self.initNavigation()
 
         self.initWindow()
-
+        
     def initLayout(self):
         self.hBoxLayout.setSpacing(0)
         self.hBoxLayout.setContentsMargins(0, self.titleBar.height(), 0, 0)
@@ -78,8 +55,7 @@ class Window(FramelessWindow):
         self.hBoxLayout.setStretchFactor(self.stackWidget, 1)
 
     def initNavigation(self):
-        # enable acrylic effect
-        # self.navigationInterface.setAcrylicEnabled(True)
+        self.navigationInterface.setAcrylicEnabled(True)
 
         self.addSubInterface(self.homeInterface, FIF.HOME, 'Home')
         self.addSubInterface(self.projectInterface, FIF.IOT, 'Project')
@@ -119,14 +95,12 @@ class Window(FramelessWindow):
         self.setQss()
 
     def addSubInterface(self, interface, icon, text: str, position=NavigationItemPosition.TOP, parent=None):
-        # Generate and assign a unique objectName based on the text if it's not already set
-        # unique_name = text.replace(' ', '-').lower()
+
         interface.setObjectName(text)
 
-        # Add widget to stack and navigation interface
         self.stackWidget.addWidget(interface)
         self.navigationInterface.addItem(
-            routeKey=interface.objectName(),  # Use the object name as the route key
+            routeKey=interface.objectName(),
             icon=icon,
             text=text,
             onClick=lambda: self.switchTo(interface),
@@ -149,16 +123,10 @@ class Window(FramelessWindow):
         self.navigationInterface.setCurrentItem(widget.objectName())
 
     def showMessageBox(self):
-        w = MessageBox(
-            'All Hail Rameez!',
-            'Mirsha bald',
-            self
-        )
-        w.yesButton.setText('Okay')
-        w.cancelButton.setText('Cancel')
+        w = SignInUpDialog(self)
 
         if w.exec():
-            QDesktopServices.openUrl(QUrl("https://contacts.google.com/person/c9172142090268153275"))
+            pass
 
 
 if __name__ == '__main__':

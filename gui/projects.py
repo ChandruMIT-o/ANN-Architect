@@ -31,7 +31,8 @@ class ProjectsScreen(QWidget):
         self.rightSectionLayout.setAlignment(Qt.AlignTop)
 
         self.titleLabel = SubtitleLabel("Deep CNN", self)
-        self.titleLabel.setStyleSheet("""QLabel{
+        self.titleLabel.setObjectName("titleLabelPS")
+        self.titleLabel.setStyleSheet("""#titleLabelPS{
                 font: 900 26px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;

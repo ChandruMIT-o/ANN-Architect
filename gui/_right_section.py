@@ -50,7 +50,8 @@ class ParametersSelectionWidget(CardWidget):
         self.collapsableMenuLayout = QHBoxLayout()
 
         self.titleLabel = CaptionLabel(propertyName, self)
-        self.titleLabel.setStyleSheet("""QLabel{
+        self.titleLabel.setObjectName("ParametersSelectionWidgetTitle")
+        self.titleLabel.setStyleSheet("""#ParametersSelectionWidgetTitle{
                 font: 900 14px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;
@@ -160,8 +161,10 @@ class PropertyBooleanMenuItem(CardWidget):
         self.hBoxLayout = QHBoxLayout(self)
 
         self.titleLabel = CaptionLabel(propertyName, self)
+        self.titleLabel.setObjectName("titleLabelPBMI")
+        self.titleLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
-        self.titleLabel.setStyleSheet("""QLabel{
+        self.titleLabel.setStyleSheet("""#titleLabelPBMI{
                 font: 400 16px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;
@@ -191,8 +194,9 @@ class PropertyDropDownMenuItem(CardWidget):
         self.hBoxLayout = QHBoxLayout(self)
 
         self.titleLabel = CaptionLabel(propertyName, self)
+        self.titleLabel.setObjectName("titleLabelDDMI")
 
-        self.titleLabel.setStyleSheet("""QLabel{
+        self.titleLabel.setStyleSheet("""#titleLabelDDMI{
                 font: 400 16px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;
@@ -224,8 +228,8 @@ class PropertyIntInputMenuItem(CardWidget):
         self.hBoxLayout = QHBoxLayout(self)
 
         self.titleLabel = CaptionLabel(propertyName, self)
-
-        self.titleLabel.setStyleSheet("""QLabel{
+        self.titleLabel.setObjectName("titleLabelPIIMI")
+        self.titleLabel.setStyleSheet("""#titleLabelPIIMI{
                 font: 400 16px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;
@@ -255,8 +259,8 @@ class PropertySubSectionMenuItem(CardWidget):
         self.hBoxLayout = QVBoxLayout(self)
 
         self.titleLabel = CaptionLabel(propertyName, self)
-
-        self.titleLabel.setStyleSheet("""QLabel{
+        self.titleLabel.setObjectName("titleLabelPSSMI")
+        self.titleLabel.setStyleSheet("""#titleLabelPSSMI{
                 font: 400 16px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;
@@ -349,7 +353,8 @@ class RightSection(QWidget):
         
         elif text == 'Parameters':
             self.titleLabel = CaptionLabel("Dense Layer", self)
-            self.titleLabel.setStyleSheet("""QLabel{
+            self.titleLabel.setObjectName("ParametersTitleLabel")
+            self.titleLabel.setStyleSheet("""#ParametersTitleLabel{
                 font: 900 14px 'Segoe UI';
                 background: transparent;
                 border-radius: 8px;
@@ -371,7 +376,7 @@ class RightSection(QWidget):
         widget = QWidget(self)  # Wrap layout inside a QWidget
         widget.setLayout(layout)
         widget.setObjectName(objectName)
-        widget.setStyleSheet('QWidget{background: "#232323"}')
+        widget.setStyleSheet("#"+str(objectName)+'{background: "#232323"}')
 
         self.stackedWidget.addWidget(widget)
         self.pivot.addItem(routeKey=objectName, text=text)

@@ -13,9 +13,6 @@ QLabel#ProjectAppCardContent{
 /*
 Below is the style sheet for the main section
 */
-Widget > QLabel {
-    font: 24px 'Segoe UI', 'Microsoft YaHei';
-}
 
 Widget {
     border: 1px solid rgb(29, 29, 29);
@@ -31,11 +28,6 @@ Window {
 
 StandardTitleBar {
     background-color: rgb(32, 32, 32);
-}
-
-StandardTitleBar > QLabel,
-Widget > QLabel {
-    color: white;
 }
 
 MinimizeButton {

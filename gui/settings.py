@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QCompleter, QGridLayout, QScrollArea, QSizePolicy, QAction
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
-from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton, setTheme, Theme, CaptionLabel, SearchLineEdit,
+from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton, setThemeColor, setTheme, Theme, CaptionLabel, SearchLineEdit,
                             IconWidget, CardWidget, BodyLabel, ColorPickerButton, SwitchButton,
                             DropDownPushButton, TitleLabel, RoundMenu, Action, HyperlinkButton)
 from qfluentwidgets import FluentIcon as FIF
@@ -13,9 +13,11 @@ class VerticalSettingCard(CardWidget):
         super().__init__(parent)
         self.iconWidget = IconWidget(icon)
         self.titleLabel = BodyLabel(title, self)
-        self.titleLabel.setStyleSheet("""BodyLabel{background: transparent; color: white; font-weight: bold;}""")
+        self.titleLabel.setObjectName("VerticalSettingCardTitle")
+        self.titleLabel.setStyleSheet("""#VerticalSettingCardTitle{background: transparent; color: white; font-weight: bold;}""")
         self.contentLabel = CaptionLabel(content, self)
-        self.contentLabel.setStyleSheet("""CaptionLabel{background: transparent; color: white}""")
+        self.contentLabel.setObjectName("VerticalSettingCardContent")
+        self.contentLabel.setStyleSheet("""#VerticalSettingCardContent{background: transparent; color: white}""")
 
         self.hBoxLayout = QHBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
@@ -51,6 +53,7 @@ class VerticalSettingCard(CardWidget):
         elif option == 3:
             self.colorPickerButton = ColorPickerButton(QColor("#5012aaa2"), title = "Color", parent=self)
             self.colorPickerButton.setFixedSize(32, 32)
+            self.colorPickerButton.clicked.connect(self.changeThemeColor)
             self.hBoxLayout.addWidget(self.colorPickerButton, 0, alignment=Qt.AlignmentFlag.AlignRight)
         elif option == 4:
             self.linkButton = HyperlinkButton(
@@ -68,6 +71,9 @@ class VerticalSettingCard(CardWidget):
                 icon=FIF.CAFE
             )
             self.hBoxLayout.addWidget(self.linkButton, 0, alignment=Qt.AlignmentFlag.AlignRight)
+
+    def changeThemeColor(self):
+        setThemeColor(self.colorPickerButton.color)
 
     def changeThemeButtonText(self, action):
         self.themeButton.setText(action.text())
@@ -161,7 +167,8 @@ class SettingsScreen(QWidget):
                                         ''')
 
         self.scrollAreaWidget = QWidget()
-        self.scrollAreaWidget.setStyleSheet('QWidget{background:"#272727"}')
+        self.scrollAreaWidget.setObjectName('scrollAreaWidget')
+        self.scrollAreaWidget.setStyleSheet('#scrollAreaWidget{background:"#272727"}')
         self.scrollAreaWidget.setLayout(self.vBoxLayout)
 
         self.scrollArea.setWidget(self.scrollAreaWidget)

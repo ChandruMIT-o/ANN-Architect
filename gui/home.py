@@ -80,8 +80,10 @@ class CustomMessageBox(MessageBoxBase):
         self.urlLineEdit.setClearButtonEnabled(True)
 
         self.validationText = CaptionLabel('• Min 3 Characters • Identifier Naming', self)
+        self.validationText.setObjectName('validationTextProjectName')
         self.nameAlreadyPresentText = CaptionLabel('• Name Already in Use!', self) 
-        self.nameAlreadyPresentText.setStyleSheet("QLabel{color: '#FFC300'}")
+        self.nameAlreadyPresentText.setObjectName('nameAlreadyPresentTextProjectName')
+        self.nameAlreadyPresentText.setStyleSheet("#nameAlreadyPresentTextProjectName{color: '#FFC300'}")
         self.nameAlreadyPresentText.setVisible(False)
 
         self.viewLayout.addWidget(self.titleLabel)
@@ -117,15 +119,14 @@ class CustomMessageBox(MessageBoxBase):
     def _validateUrl(self, text):
         self.yesButton.setEnabled(self.isNameValid(text))
         if self.isNameValid(text):
-            self.validationText.setStyleSheet("QLabel{color: '#06D001'}")
+            self.validationText.setStyleSheet("#validationTextProjectName{color: '#06D001'}")
         else:
-            self.validationText.setStyleSheet("QLabel{color: white}")
+            self.validationText.setStyleSheet("#validationTextProjectName{color: white}")
         self.nameAlreadyPresentText.setVisible(not self.isNameUnique(text))
 
 class HomeScreen(QWidget):
-
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent = None):
+        super().__init__(parent)
         setTheme(Theme.DARK)
         self.setStyleSheet('HomeScreen{background:"#272727"}')
 
@@ -145,7 +146,8 @@ class HomeScreen(QWidget):
 
 
         self.projectCardWidget = QWidget()
-        self.projectCardWidget.setStyleSheet('QWidget{background: "#272727"; border: 0px;}')
+        self.projectCardWidget.setObjectName("projectCardWidget")
+        self.projectCardWidget.setStyleSheet('#projectCardWidget{background: "#272727"; border: 0px;}')
         self.scroll_area = QScrollArea()
         self.scroll_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
@@ -258,8 +260,8 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    with open("gui\styles\dark\main.qss", "r") as qss_file:
-        app.setStyleSheet(qss_file.read())
+    # with open("gui\styles\dark\main.qss", "r") as qss_file:
+    #     app.setStyleSheet(qss_file.read())
 
     w = HomeScreen()
     w.show()

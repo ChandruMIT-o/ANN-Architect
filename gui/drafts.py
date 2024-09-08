@@ -144,7 +144,8 @@ class DraftScreen(QWidget):
                                         ''')
 
         self.scrollAreaWidget = QWidget()
-        self.scrollAreaWidget.setStyleSheet('QWidget{background:"#272727"}')
+        self.scrollAreaWidget.setObjectName("scrollAreaWidgetDrafts")
+        self.scrollAreaWidget.setStyleSheet('#scrollAreaWidgetDrafts{background:"#272727"}')
         self.scrollAreaWidget.setLayout(self.vBoxLayout)
 
         self.scrollArea.setWidget(self.scrollAreaWidget)
