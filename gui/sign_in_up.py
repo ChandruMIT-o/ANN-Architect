@@ -151,6 +151,9 @@ class SignInUpDialog(MessageBoxBase):
 
         print(email, password)
 
+        # TODO: use the given email and password to check if the user is signed in or not.
+        # * (essentially return true or false from the database)
+
         if email == "chandru@gmail.com" and password == "Chandru@0503":
             w = InfoBar.success(
                 title='SignIn',
@@ -188,6 +191,9 @@ class SignInUpDialog(MessageBoxBase):
         if "@" not in email or "." not in email:
             self.validateEmailText.setText("Enter a valid email address")
             return False
+        
+        # TODO: check if the email address already exists or not. 
+        # * (essentially return False or True)
 
         if email in emails:
             self.validateEmailText.setText("Email is already in use")

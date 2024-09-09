@@ -192,11 +192,13 @@ class HomeScreen(QWidget):
         self.gridProjectsLayout.setAlignment(Qt.AlignCenter)
         self.gridProjectsLayout.setSpacing(30)
 
+        self.titles = ["Deep CNN Model"]
+
         for x in range(5):
             for y in range(5):
 
                 self.gridProjectsLayout.addWidget(ProjectAppCard(
-                    icon=":/qfluentwidgets/images/logo.png",
+                    icon="gui\images\logo.png",
                     title="DEEP CNN Model",
                     content="Last Updated 3 days ago."
                 ), x, y)

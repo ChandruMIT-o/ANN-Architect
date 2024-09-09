@@ -1,20 +1,18 @@
-from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QCompleter, QGridLayout, QScrollArea, QSizePolicy, QAction, QStackedWidget,
-                             QSpacerItem)
+from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, 
+                             QHBoxLayout, QSizePolicy, QSpacerItem)
 from PyQt5.QtCore import Qt
-from qfluentwidgets import (setTheme, Theme, CaptionLabel, SearchLineEdit, Action, RoundMenu,
-                            ToolButton, CardWidget, SpinBox, DoubleSpinBox, PillToolButton, PushButton, PrimaryPushButton,
-                            SegmentedWidget, SwitchButton, TransparentToolButton, TransparentPushButton,
-                            EditableComboBox, PushButton)
+from qfluentwidgets import (setTheme, Theme, CaptionLabel, Action, RoundMenu,
+                            ToolButton, CardWidget, PillToolButton, PushButton, PrimaryPushButton, TransparentToolButton)
 from qfluentwidgets import FluentIcon as FIF
 import sys
 
 class LayerBar(CardWidget):
-    def __init__(self, propertyName, parent=None):
+    def __init__(self, propertyName, parameters, parent=None):
         super().__init__(parent)
+        self.parent = parent
 
         self.hBoxLayout = QHBoxLayout(self)
-
-        self.parameters = ['Shape : (3,4,5)', 'Activation: "RELU"', 'Regulariser: "L1"']
+        self.parameters = parameters
 
         self.paramterButtons = []
 
@@ -60,6 +58,28 @@ class LayerBar(CardWidget):
         self.setFixedHeight(55)
         self.hBoxLayout.setContentsMargins(11, 11, 11, 11)
 
+        # Connect move buttons to actions
+        self.moveUpButton.clicked.connect(self.move_up)
+        self.moveDownButton.clicked.connect(self.move_down)
+        self.duplicateButton.clicked.connect(self.duplicate_layer)
+
+    def move_up(self):
+        index = self.parent.vBoxLayout.indexOf(self)
+        if index > 0:
+            self.parent.vBoxLayout.removeWidget(self)
+            self.parent.vBoxLayout.insertWidget(index - 1, self)
+
+    def move_down(self):
+        index = self.parent.vBoxLayout.indexOf(self)
+        if index < self.parent.vBoxLayout.count() - 1:
+            self.parent.vBoxLayout.removeWidget(self)
+            self.parent.vBoxLayout.insertWidget(index + 1, self)
+
+    def duplicate_layer(self):
+        duplicated_layer = LayerBar(self.layerName.text(), self.parameters, self.parent)
+        index = self.parent.vBoxLayout.indexOf(self)
+        self.parent.vBoxLayout.insertWidget(index + 1, duplicated_layer)
+
     def onMorePropertiesButtonClick(self, event):
         pos = self.morePropertiesButton.mapToGlobal(event.pos())
         self.showProperties(event)
@@ -68,9 +88,9 @@ class LayerBar(CardWidget):
         menu = RoundMenu(parent=self)
 
         menu.addActions([
-            Action(FIF.PEOPLE, 'Regulariser: 50'),
-            Action(FIF.SHOPPING_CART, 'Bias Initializer: 45'),
-            Action(FIF.CODE, 'Kernel constraint: Stop'),
+            Action('Regulariser: 50'),
+            Action('Bias Initializer: 45'),
+            Action('Kernel constraint: Stop'),
         ])
         menu.addSeparator()
         menu.addAction(Action(FIF.SETTING, 'Sample'))
@@ -84,9 +104,11 @@ class ModelDesigner(QWidget):
 
         self.vBoxLayout = QVBoxLayout(self)
 
-        self.layer1 = LayerBar("Dense", self)
-        self.layer2 = LayerBar("Dense", self)
-        self.layer3 = LayerBar("Dense", self)
+        parameters1 = ['Shape : (3,4,5)', 'Activation: "RELU"', 'Regulariser: "L1"']
+
+        self.layer1 = LayerBar("Dense", parameters1, self)
+        self.layer2 = LayerBar("RNN", parameters1, self)
+        self.layer3 = LayerBar("ANN", parameters1, self)
 
         self.vBoxLayout.addWidget(self.layer1)
         self.vBoxLayout.addWidget(self.layer2)

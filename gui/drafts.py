@@ -28,13 +28,20 @@ class VerticalDraftCard(CardWidget):
             self.moreButton = PillPushButton(FluentIcon.PEOPLE, 'Publish')
 
             self.menu = RoundMenu(parent=self)
-            self.menu.addAction(QAction(FIF.COPY.icon(), 'Duplicate'))
+            self.menu.addAction(QAction(FIF.DICTIONARY_ADD.icon(), 'Duplicate'))
             self.menu.addAction(QAction(FIF.DELETE.icon(), 'Delete'))
 
             self.transparentDropDownToolButton = TransparentDropDownToolButton(FIF.MORE, self)
             self.transparentDropDownToolButton.setMenu(self.menu)
         else:
-            self.moreButton = PrimaryToolButton(FluentIcon.SAVE)
+            self.moreButton = ToolButton(FluentIcon.SAVE)
+
+            self.menu = RoundMenu(parent=self)
+            self.menu.addAction(QAction(FIF.DICTIONARY_ADD.icon(), 'Duplicate'))
+            self.menu.addAction(QAction(FIF.DELETE.icon(), 'Delete'))
+
+            self.transparentDropDownToolButton = TransparentDropDownToolButton(FIF.MORE, self)
+            self.transparentDropDownToolButton.setMenu(self.menu)
 
         self.hBoxLayout = QHBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
@@ -68,6 +75,7 @@ class VerticalDraftCard(CardWidget):
         else:
             self.hBoxLayout.addWidget(self.openButton, 0, Qt.AlignRight)
             self.hBoxLayout.addWidget(self.moreButton, 0, Qt.AlignRight)
+            self.hBoxLayout.addWidget(self.transparentDropDownToolButton, 0, Qt.AlignRight)
 
             self.moreButton.setFixedSize(32, 32)
 
@@ -89,7 +97,7 @@ class DraftScreen(QWidget):
         for x in range(2):
 
             self.vBoxLayout.addWidget(VerticalDraftCard(
-                icon=":/qfluentwidgets/images/logo.png",
+                icon="gui\images\logo.png",
                 title="DEEP CNN Model",
                 content="Last Updated 3 days ago.",
                 saved = True
@@ -100,7 +108,7 @@ class DraftScreen(QWidget):
         for x in range(2):
 
             self.vBoxLayout.addWidget(VerticalDraftCard(
-                icon=":/qfluentwidgets/images/logo.png",
+                icon="gui\images\logo.png",
                 title="DEEP CNN Model",
                 content="Last Updated 3 days ago.",
                 saved = False
