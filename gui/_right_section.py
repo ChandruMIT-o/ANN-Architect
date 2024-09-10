@@ -6,6 +6,8 @@ from qfluentwidgets import (setTheme, Theme, CaptionLabel, SearchLineEdit,
                             SegmentedWidget, SwitchButton, TransparentToolButton,
                             EditableComboBox)
 from qfluentwidgets import FluentIcon as FIF
+
+from content.dictionary_representation import CONSTANTS as CONT
 import sys
 
 class ParametersSelectionMenuItem(CardWidget):
@@ -188,7 +190,7 @@ class PropertyBooleanMenuItem(CardWidget):
 
 class PropertyDropDownMenuItem(CardWidget):
 
-    def __init__(self, propertyName, parent=None):
+    def __init__(self, propertyName, items, parent=None):
         super().__init__(parent)
 
         self.hBoxLayout = QHBoxLayout(self)
@@ -206,9 +208,8 @@ class PropertyDropDownMenuItem(CardWidget):
         
         self.comboBox = EditableComboBox(self)
         
-        items = ['Rameez', 'Iesa', 'Mirsha', 'Surya']
         self.comboBox.addItems(items)
-        self.comboBox.setPlaceholderText("Rameez")
+        self.comboBox.setPlaceholderText(items[0])
         self.comboBox.setCurrentIndex(-1)
 
         self.completer = QCompleter(items, self)
@@ -348,27 +349,13 @@ class RightSection(QWidget):
 
     def addSubInterface(self, layout: QVBoxLayout, objectName, text):
 
+        self.rightVLayout = layout
+
         if text == 'Layers':
             layout.addWidget(ParametersSelectionWidget("Convolution"))
         
         elif text == 'Parameters':
-            self.titleLabel = CaptionLabel("Dense Layer", self)
-            self.titleLabel.setObjectName("ParametersTitleLabel")
-            self.titleLabel.setStyleSheet("""#ParametersTitleLabel{
-                font: 900 14px 'Segoe UI';
-                background: transparent;
-                border-radius: 8px;
-                color: white;
-                padding: 2px;
-                }
-                """)
-            layout.addWidget(self.titleLabel)
-            
-            layout.addWidget(PropertyBooleanMenuItem("verbose"))
-            layout.addWidget(PropertyDropDownMenuItem("musicBrain"))
-            layout.addWidget(PropertyIntInputMenuItem("volume"))
-            layout.addWidget(PropertySubSectionMenuItem("subvolume"))
-
+            self.init_parameters(layer_name="DENSE_LAYER")
         elif text == 'Document':
 
             pass
@@ -380,6 +367,65 @@ class RightSection(QWidget):
 
         self.stackedWidget.addWidget(widget)
         self.pivot.addItem(routeKey=objectName, text=text)
+
+    def init_parameters(self, layer_name):
+
+        self.titleLabel = CaptionLabel(layer_name, self)
+        self.titleLabel.setObjectName("ParametersTitleLabel")
+        self.titleLabel.setStyleSheet("""#ParametersTitleLabel{
+            font: 900 14px 'Segoe UI';
+            background: transparent;
+            border-radius: 8px;
+            color: white;
+            padding: 2px;
+            }
+            """)
+        self.rightVLayout.addWidget(self.titleLabel)
+
+        if layer_name in CONT().LAYER_INFO:
+
+            DICT = CONT().LAYER_INFO[layer_name]
+            BASIC_DICT = DICT['basic']
+            ADVANCED_DICT = DICT['advanced']
+
+        self.basicLabel = CaptionLabel("Basic Paramaters")
+        self.basicLabel.setObjectName("basicParametersLabel")
+        self.basicLabel.setStyleSheet("""#basicParametersLabel{
+            font: 400 14px 'Segoe UI';
+            background: transparent;
+            border-radius: 8px;
+            color: white;
+            padding: 2px;
+            }
+            """)
+        self.rightVLayout.addWidget(self.basicLabel)
+
+        for PARAM in BASIC_DICT.keys():
+            type = BASIC_DICT[PARAM]['type']
+            structure = BASIC_DICT[PARAM]['structure']
+            options = BASIC_DICT[PARAM]['options']
+
+            if structure == 'linear':
+                if type == 'dropdown':
+                    self.rightVLayout.addWidget(PropertyDropDownMenuItem(PARAM, options))
+
+
+
+        self.advancedLabel = CaptionLabel("Advanced Paramaters")
+        self.advancedLabel.setObjectName("advancedParametersLabel")
+        self.advancedLabel.setStyleSheet("""#advancedParametersLabel{
+            font: 400 14px 'Segoe UI';
+            background: transparent;
+            border-radius: 8px;
+            color: white;
+            padding: 2px;
+            }
+            """)
+        self.rightVLayout.addWidget(self.advancedLabel)
+
+        # self.rightVLayout.addWidget(PropertyBooleanMenuItem("verbose"))
+        # self.rightVLayout.addWidget(PropertyIntInputMenuItem("volume"))
+        # self.rightVLayout.addWidget(PropertySubSectionMenuItem("subvolume"))
 
 
 if __name__ == '__main__':

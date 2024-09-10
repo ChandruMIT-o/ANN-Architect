@@ -1,19 +1,26 @@
 # coding:utf-8
 import sys
 import re
+import random
+import datetime
 
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, QStringListModel
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QCompleter, QGridLayout, QScrollArea, QSizePolicy
 
-from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton, setTheme, Theme, CaptionLabel, SearchLineEdit,
-                            IconWidget, CardWidget, BodyLabel, PillPushButton, FluentIcon, InfoBadge, InfoLevel)
+from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton, setTheme, Theme, CaptionLabel, SearchLineEdit, ComboBox,
+                            IconWidget, CardWidget, BodyLabel, PillPushButton, FluentIcon, InfoBadge, InfoLevel, TransparentToolButton)
 from qfluentwidgets import FluentIcon as FIF
+
+if __name__ == '__main__':
+    from _summary_gen_dialog import GeneratedSummaryMessageBox
+else:
+    from gui._summary_gen_dialog import GeneratedSummaryMessageBox
 
 class ProjectAppCard(CardWidget):
 
-    def __init__(self, icon, title, content, parent=None):
-        super().__init__()
+    def __init__(self, icon, title, lastUpdated, owner, archiType, totalParameters, is_fav,  parent=None):
+        super().__init__(parent)
         self.iconWidget = IconWidget(icon)
         self.titleLabel = BodyLabel(title, self)
         self.titleLabel.setObjectName("ProjectAppCardTitle")
@@ -21,7 +28,7 @@ class ProjectAppCard(CardWidget):
                                         background: transparent; 
                                         color: white;
                                     }""")
-        self.contentLabel = CaptionLabel(content, self)
+        self.contentLabel = CaptionLabel(lastUpdated, self)
         self.contentLabel.setObjectName("ProjectAppCardContent")
         self.contentLabel.setStyleSheet("""#ProjectAppCardContent{
                                         background: transparent; 
@@ -29,14 +36,21 @@ class ProjectAppCard(CardWidget):
                                     }""")
         self.openButton = PushButton('Clone', self)
         self.moreButton = PillPushButton(FluentIcon.HEART, "Fav", self)
+        self.moreButton.setChecked(is_fav)
+        self.moreButton.clicked.connect(self.updateFavs)
 
-        self.architypeInfoBadge = InfoBadge.info("Architype: CNN")
-        self.totalParametersInfoBadge = InfoBadge.attension("Total Parameters: 1.2B")
-        self.ownerInfoBadge = InfoBadge.warning("Rameez Akther")
+        self.infoSummaryButton = TransparentToolButton(FIF.INFO, self)
+        self.infoSummaryButton.setFixedSize(32, 32)
+        self.infoSummaryButton.clicked.connect(self.displaySummaryDialog)
+
+        self.architypeInfoBadge = InfoBadge.info(archiType)
+        self.totalParametersInfoBadge = InfoBadge.attension(totalParameters)
+        self.ownerInfoBadge = InfoBadge.warning(owner)
 
         self.vCardLayout = QVBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
         self.hButtonLayout = QHBoxLayout()
+        self.hTitleLayout = QHBoxLayout()
 
         self.setFixedWidth(250)
         self.setFixedHeight(250)
@@ -46,7 +60,11 @@ class ProjectAppCard(CardWidget):
 
         self.vCardLayout.setContentsMargins(20, 20, 20, 20)
         self.vCardLayout.setSpacing(10)
-        self.vCardLayout.addWidget(self.iconWidget)
+
+        self.hTitleLayout.addWidget(self.iconWidget, 0, alignment=Qt.AlignmentFlag.AlignLeft)
+        self.hTitleLayout.addWidget(self.infoSummaryButton, 0, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.vCardLayout.addLayout(self.hTitleLayout)
 
         self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.vBoxLayout.setSpacing(0)
@@ -57,7 +75,6 @@ class ProjectAppCard(CardWidget):
         self.vCardLayout.addWidget(self.ownerInfoBadge, 0, Qt.AlignLeft)
         self.vCardLayout.addWidget(self.architypeInfoBadge, 0, Qt.AlignLeft)
         self.vCardLayout.addWidget(self.totalParametersInfoBadge, 0, Qt.AlignLeft)
-
         self.vCardLayout.addStretch(1)
 
         self.hButtonLayout.addWidget(self.openButton)
@@ -68,13 +85,34 @@ class ProjectAppCard(CardWidget):
 
         self.moreButton.setFixedSize(80, 32)
 
+    def displaySummaryDialog(self):
+        w = GeneratedSummaryMessageBox(self)
+        if w.exec():
+            pass
+
+    def updateFavs(self):
+
+        val = self.moreButton.isChecked()
+
+        # TODO: This function updates the favourites table based on true or false in the variable val
+        pass
+
 class CustomMessageBox(MessageBoxBase):
     """ Custom message box """
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.titleLabel = SubtitleLabel('Project Name', self)
+        self.archiTypeLabel = CaptionLabel('Architecture', self)
         self.urlLineEdit = LineEdit(self)
+        self.archiTypeCombobox = ComboBox(self)
+        self.hBoxLayout = QHBoxLayout(self)
+
+        self.archiTypeCombobox.setPlaceholderText("CNN")
+
+        items = ['CNN', 'Deep CNN', 'RNN', 'ANN']
+        self.archiTypeCombobox.addItems(items)
+        self.archiTypeCombobox.setCurrentIndex(-1)
 
         self.urlLineEdit.setPlaceholderText('Identifier Naming Convention')
         self.urlLineEdit.setClearButtonEnabled(True)
@@ -90,8 +128,11 @@ class CustomMessageBox(MessageBoxBase):
         self.viewLayout.addWidget(self.urlLineEdit)
         self.viewLayout.addWidget(self.validationText)
         self.viewLayout.addWidget(self.nameAlreadyPresentText)
+        self.viewLayout.addWidget(self.archiTypeLabel)
+        self.viewLayout.addWidget(self.archiTypeCombobox)
 
         self.yesButton.setText('Create')
+        self.yesButton.clicked.connect(self.updateProjectsTable)
         self.cancelButton.setText('Cancel')
 
         self.widget.setMinimumWidth(350)
@@ -99,6 +140,15 @@ class CustomMessageBox(MessageBoxBase):
         self.urlLineEdit.textChanged.connect(self._validateUrl)
 
         # self.hideYesButton()
+
+    def updateProjectsTable(self):
+
+        # TODO: This function updates the projects table based on the inputted data
+        project_name = self.urlLineEdit.text()
+        architype = self.archiTypeCombobox.text()
+        today = datetime.datetime.now() # Change this to date format
+        # TODO: Find other parameters as well
+        pass
 
     def isNameValid(self, project_name):
 
@@ -141,9 +191,10 @@ class HomeScreen(QWidget):
 
         self.searchLineEdit = SearchLineEdit(self)
         self.searchLineEdit.setMaximumWidth(400)
+        self.searchLineEdit.textChanged.connect(self.init_search_complete)
         self.searchButton = PushButton("Search",self)
         self.searchButton.setMaximumWidth(100)
-
+        self.searchButton.clicked.connect(self.repopulate_layout)
 
         self.projectCardWidget = QWidget()
         self.projectCardWidget.setObjectName("projectCardWidget")
@@ -192,17 +243,6 @@ class HomeScreen(QWidget):
         self.gridProjectsLayout.setAlignment(Qt.AlignCenter)
         self.gridProjectsLayout.setSpacing(30)
 
-        self.titles = ["Deep CNN Model"]
-
-        for x in range(5):
-            for y in range(5):
-
-                self.gridProjectsLayout.addWidget(ProjectAppCard(
-                    icon="gui\images\logo.png",
-                    title="DEEP CNN Model",
-                    content="Last Updated 3 days ago."
-                ), x, y)
-
         self.resize(600, 600)
         
         self.hSearchLayout.addWidget(self.searchLineEdit)
@@ -222,37 +262,132 @@ class HomeScreen(QWidget):
 
         self.createProjectButton.clicked.connect(self.showDialog)
 
-        # ------------------------- GET GLOBAL PROJECT NAMES ----------------
-        stands = [
-            "Star Platinum", "Hierophant Green",
-            "Made in Haven", "King Crimson",
-            "Silver Chariot", "Crazy diamond",
-            "Metallica", "Another One Bites The Dust",
-            "Heaven's Door", "Killer Queen",
-            "The Grateful Dead", "Stone Free",
-            "The World", "Sticky Fingers",
-            "Ozone Baby", "Love Love Deluxe",
-            "Hermit Purple", "Gold Experience",
-            "King Nothing", "Paper Moon King",
-            "Scary Monster", "Mandom",
-            "20th Century Boy", "Tusk Act 4",
-            "Ball Breaker", "Sex Pistols",
-            "D4C • Love Train", "Born This Way",
-            "SOFT & WET", "Paisley Park",
-            "Wonder of U", "Walking Heart",
-            "Cream Starter", "November Rain",
-            "Smooth Operators", "The Matte Kudasai"
-        ]
-        self.completer = QCompleter(stands, self.searchLineEdit)
+        self.completer = QCompleter([], self.searchLineEdit)
+
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.completer.setMaxVisibleItems(10)
         self.searchLineEdit.setCompleter(self.completer)
-        # ------------------------- GET GLOBAL PROJECT NAMES ----------------
+
+        self.init_top_k(True)
 
     def showDialog(self):
         w = CustomMessageBox(self)
         if w.exec():
             print(w.urlLineEdit.text())
+
+    def init_search_complete(self):
+        
+        searchContent = self.searchLineEdit.text()
+
+        if searchContent:
+
+            # TODO: Use the above search content to fetch relevant titles for search suggestions
+            # ? Store them in the below lists somehow
+
+            project_names = [
+                    "Celestial Convergence",
+                    "Quantum Leap",
+                    "Nebula Nexus",
+                    "Stellar Surge",
+                    "Cosmic Crucible",
+                    "Galactic Gateway",
+                    "Stardust Symphony",
+                    "Celestial Choir",
+                    "Nebula Nebula",
+                    "Stellar Storm"
+                ]
+        else:
+            project_names = []
+
+        self.completer.setModel(QStringListModel(project_names))
+
+    def init_top_k(self, switch):
+
+        if switch:
+
+            # TODO: Implement logic to fetch and display top k global projects
+            # ? Store them in the below lists somehow
+            self.titleSamples = ["Deep CNN Model", "BERT Language Model", "GAN Image Generator", "Transformer-Based Translator", "Autoencoder Anomaly Detector"]
+            self.ownerSamples = ["Rameez Akther", "Alice Smith", "Bob Johnson", "Charlie Brown", "David Lee"]
+            self.lastUpdatedSamples = [datetime.datetime.now() - datetime.timedelta(days=random.randint(1, 30)) for _ in range(5)]
+            self.totalParametersSamples = [random.randint(1, 100) for _ in range(5)]
+            self.archiTypeSamples = ["CNN", "RNN", "Transformer", "GAN", "Autoencoder"]
+
+            # ! Fav separately should be fetched
+
+            self.favs = [True, False, False, True, False]
+
+        else:
+
+            searchContent = self.searchLineEdit.text()
+
+            # TODO: Use the above search content to fetch relevant records
+            # ? Store them in the below lists somehow
+
+            self.titleSamples = [
+                "Advanced Speech Recognition System",  # Longer title
+                "Building a Chatbot (Interactive)",  # Title with explanation in parentheses
+                f"Project: Image Colorizer (v{random.randint(1, 10)})",  # Title with version number
+                *["Simple {} Model".format(random.choice(["Regression", "Classification"])) for _ in range(2)]  # Dynamically generated titles
+            ]
+            self.ownerSamples = [
+                "王晓明 (Wáng Xiǎomíng)",  # Chinese name
+                "キム・민수 (Kim Min-soo)",  # Korean name
+                "Aïcha Diallo",  # African name
+                random.choice(["Pedro Hernandez", "Isabella Rossi"]),  # Random European name
+                random.choice(["Sarah Jones", "David Williams"])  # Random American name
+            ]
+            self.lastUpdatedSamples = [datetime.datetime.now() - datetime.timedelta(days=random.randint(1, 30)) for _ in range(5)]
+            self.totalParametersSamples = [random.randint(1000, 100000) for _ in range(5)]
+            self.archiTypeSamples = random.sample(["CNN", "RNN", "Transformer", "GAN", "Autoencoder"], 4) + random.sample(self.archiTypeSamples, 1)  # Guarantees at least 1 duplicate
+            
+            # ! Fav separately should be fetched
+            
+            self.favs = [True, False, False, True, False]
+
+        ind = 0
+
+        for x,y in self._generate_matrix_indices(len(self.titleSamples), 5):
+            self.gridProjectsLayout.addWidget(ProjectAppCard(
+                icon="gui\images\logo.png",
+                title=self.titleSamples[ind],
+                owner=self.ownerSamples[ind],
+                lastUpdated=self.lastUpdatedSamples[ind].strftime("%B %d, %Y"),  # Format date as needed
+                totalParameters=f"{self.totalParametersSamples[ind]} B parameters",
+                archiType=self.archiTypeSamples[ind],
+                is_fav=self.favs[ind],
+                parent=self
+            ), x, y)
+
+            ind += 1
+
+    def repopulate_layout(self):
+
+        searchContent = self.searchLineEdit.text()
+        while self.gridProjectsLayout.count() > 0:
+            item = self.gridProjectsLayout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        if searchContent:
+            self.init_top_k(False)
+        else:
+            self.init_top_k(True)
+
+    def _generate_matrix_indices(self, rows, cols):
+        """Generates a list of tuples representing the indices of a matrix.
+        """
+        import math
+
+        temp = rows
+        rows = int(math.ceil(rows / cols))
+
+        indices = []
+        for row in range(rows):
+            for col in range(cols):
+                indices.append((row, col))
+        return indices[:temp]
 
 if __name__ == '__main__':
     # enable dpi scale

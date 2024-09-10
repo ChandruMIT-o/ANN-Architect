@@ -41,7 +41,7 @@ class SignInUpDialog(MessageBoxBase):
         self.yesButton.setText('Sign In')
         self.cancelButton.setText('Close')
         self.cancelButton.clicked.connect(self.close)
-        self.cancelButton.setDisabled(True)
+        # self.cancelButton.setDisabled(True)
 
         self.yesButton.disconnect()
         self.yesButton.clicked.connect(self.sign_me_in)

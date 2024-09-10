@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QCo
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, PushButton, setThemeColor, setTheme, Theme, CaptionLabel, SearchLineEdit,
-                            IconWidget, CardWidget, BodyLabel, ColorPickerButton, SwitchButton,
+                            IconWidget, CardWidget, BodyLabel, ColorPickerButton, SwitchButton, isDarkTheme,
                             DropDownPushButton, TitleLabel, RoundMenu, Action, HyperlinkButton)
 from qfluentwidgets import FluentIcon as FIF
 import sys
@@ -14,10 +14,11 @@ class VerticalSettingCard(CardWidget):
         self.iconWidget = IconWidget(icon)
         self.titleLabel = BodyLabel(title, self)
         self.titleLabel.setObjectName("VerticalSettingCardTitle")
-        self.titleLabel.setStyleSheet("""#VerticalSettingCardTitle{background: transparent; color: white; font-weight: bold;}""")
+        
+        #if isDarkTheme: self.titleLabel.setStyleSheet("""#VerticalSettingCardTitle{background: transparent; color: white; font-weight: bold;}""")
         self.contentLabel = CaptionLabel(content, self)
         self.contentLabel.setObjectName("VerticalSettingCardContent")
-        self.contentLabel.setStyleSheet("""#VerticalSettingCardContent{background: transparent; color: white}""")
+        #if isDarkTheme: self.contentLabel.setStyleSheet("""#VerticalSettingCardContent{background: transparent; color: white}""")
 
         self.hBoxLayout = QHBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
@@ -45,7 +46,7 @@ class VerticalSettingCard(CardWidget):
             self.menu = RoundMenu(parent=self)
             self.menu.addAction(Action('Dark'))
             self.menu.addAction(Action('Light'))
-            self.menu.addAction(Action('Deep'))
+            self.menu.addAction(Action('System'))
             self.themeButton = DropDownPushButton("Dark", self, FIF.CONSTRACT)
             self.themeButton.setMenu(self.menu)         
             self.menu.triggered.connect(self.changeThemeButtonText)
@@ -77,12 +78,20 @@ class VerticalSettingCard(CardWidget):
 
     def changeThemeButtonText(self, action):
         self.themeButton.setText(action.text())
+        if action.text() == "Dark" or action.text() == "System":
+            setTheme(Theme.DARK)
+        elif action.text() == "Light":
+            setTheme(Theme.LIGHT)
+
+    def toggleMicaEffect(self):
+        print("Does nothing!")
 
 class SettingsScreen(QWidget):
     def __init__(self):
         super().__init__()
         setTheme(Theme.DARK)
-        self.setStyleSheet('SettingsScreen{background:"#272727"}')
+        self.setObjectName("SettingsScreen")
+        # if isDarkTheme: self.setStyleSheet('#SettingsScreen{background:"#272727"}')
 
         self.vBoxLayout = QVBoxLayout(self)
         self.title1 = TitleLabel("Settings")
@@ -130,7 +139,7 @@ class SettingsScreen(QWidget):
         ))
 
         self.scrollArea = QScrollArea()
-        self.scrollArea.setStyleSheet('''
+        """self.scrollArea.setStyleSheet('''
                                         QScrollBar:vertical {
         background: transparent;  /* Background color of the scrollbar */
         width: 8px;
@@ -164,11 +173,12 @@ class SettingsScreen(QWidget):
     QWidget {
         border: 0px;  /* Remove borders from QWidget */
     }        
-                                        ''')
+                                        ''')"""
 
         self.scrollAreaWidget = QWidget()
         self.scrollAreaWidget.setObjectName('scrollAreaWidget')
-        self.scrollAreaWidget.setStyleSheet('#scrollAreaWidget{background:"#272727"}')
+        # if isDarkTheme: self.scrollAreaWidget.setStyleSheet('#scrollAreaWidget{background:"#272727"}')
+        # else: self.scrollAreaWidget.setStyleSheet('#scrollAreaWidget{background: white}')
         self.scrollAreaWidget.setLayout(self.vBoxLayout)
 
         self.scrollArea.setWidget(self.scrollAreaWidget)
