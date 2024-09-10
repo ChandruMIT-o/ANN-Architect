@@ -190,10 +190,14 @@ class PropertyBooleanMenuItem(CardWidget):
 
 class PropertyDropDownMenuItem(CardWidget):
 
-    def __init__(self, propertyName, items, parent=None):
+    def __init__(self, propertyName, items, nested = False, parent=None):
         super().__init__(parent)
 
-        self.hBoxLayout = QHBoxLayout(self)
+        if nested:
+            self.subSections = items
+            items = list(items.keys())
+
+        self.hBoxLayout = QVBoxLayout(self)
 
         self.titleLabel = CaptionLabel(propertyName, self)
         self.titleLabel.setObjectName("titleLabelDDMI")
@@ -205,25 +209,58 @@ class PropertyDropDownMenuItem(CardWidget):
                 color: white;
                 }         
         """)
-        
+
         self.comboBox = EditableComboBox(self)
-        
+
         self.comboBox.addItems(items)
-        self.comboBox.setPlaceholderText(items[0])
-        self.comboBox.setCurrentIndex(-1)
+        self.comboBox.setText(items[0])
+        self.comboBox.setCurrentIndex(0)
 
         self.completer = QCompleter(items, self)
         self.comboBox.setCompleter(self.completer)
 
-        self.hBoxLayout.addWidget(self.titleLabel, alignment=Qt.AlignmentFlag.AlignLeft)
-        self.hBoxLayout.addWidget(self.comboBox, alignment=Qt.AlignmentFlag.AlignRight)
+        self.vBoxLayout = QHBoxLayout(self)
+        self.vBoxLayout.setContentsMargins(12, 0, 0, 0)
 
-        self.setFixedHeight(50)
-        self.hBoxLayout.setContentsMargins(20, 0, 8, 0)
+        self.vBoxLayout.addWidget(self.titleLabel, alignment=Qt.AlignmentFlag.AlignLeft)
+        self.vBoxLayout.addWidget(self.comboBox, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.vSubSection = QVBoxLayout()
+
+        self.hBoxLayout.setContentsMargins(8, 8, 8, 8)
+
+        self.hBoxLayout.addLayout(self.vBoxLayout)
+        self.hBoxLayout.addLayout(self.vSubSection)
+        self.hBoxLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        if nested:
+            self.comboBox.currentIndexChanged.connect(self.init_subSection)
+            self.init_subSection()
+
+    def init_subSection(self):
+
+        while self.vSubSection.count() > 0:
+            item = self.vSubSection.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        option = self.comboBox.text()
+
+        if option in self.subSections:
+
+            for sub_name, sub_type in self.subSections[option].items():
+
+                if sub_type == 'float_input':
+
+                    self.vSubSection.addWidget(PropertyIntInputMenuItem(propertyName=sub_name, type = sub_type))
+
+
+
 
 class PropertyIntInputMenuItem(CardWidget):
 
-    def __init__(self, propertyName, type = "double", parent=None):
+    def __init__(self, propertyName, type = "float_input", parent=None):
         super().__init__(parent)
 
         self.hBoxLayout = QHBoxLayout(self)
@@ -238,9 +275,9 @@ class PropertyIntInputMenuItem(CardWidget):
                 }         
         """)
 
-        if type == "int":
+        if type == "integer_input":
             self.intInput = SpinBox(self)
-        elif type == "double":
+        elif type == "float_input":
             self.intInput = DoubleSpinBox(self)
 
         self.intInput.setMinimum(0)
@@ -254,7 +291,7 @@ class PropertyIntInputMenuItem(CardWidget):
 
 class PropertySubSectionMenuItem(CardWidget):
 
-    def __init__(self, propertyName, type = "double", parent=None):
+    def __init__(self, propertyName, type = "float_input", parent=None):
         super().__init__(parent)
 
         self.hBoxLayout = QVBoxLayout(self)
@@ -269,9 +306,9 @@ class PropertySubSectionMenuItem(CardWidget):
                 }         
         """)
 
-        if type == "int":
+        if type == "integer_input":
             self.intInput = SpinBox(self)
-        elif type == "double":
+        elif type == "float_input":
             self.intInput = DoubleSpinBox(self)
 
         self.intInput.setMinimum(0)
@@ -401,16 +438,31 @@ class RightSection(QWidget):
         self.rightVLayout.addWidget(self.basicLabel)
 
         for PARAM in BASIC_DICT.keys():
-            type = BASIC_DICT[PARAM]['type']
-            structure = BASIC_DICT[PARAM]['structure']
-            options = BASIC_DICT[PARAM]['options']
+
+
+            INPUT = BASIC_DICT[PARAM]
+
+            type = INPUT['type']
+            structure = INPUT['structure']
+            options = INPUT['options']
 
             if structure == 'linear':
                 if type == 'dropdown':
                     self.rightVLayout.addWidget(PropertyDropDownMenuItem(PARAM, options))
 
 
+            if structure == 'nested':
+                if type == 'dropdown':
+                    self.rightVLayout.addWidget(PropertyDropDownMenuItem(PARAM, options, nested=True))
 
+                    # for inp in options:
+
+                    #     for sub_name, sub_type in INPUT[inp].items():
+
+                    #         if sub_type == 'float_input':
+
+                    #             self.rightVLayout.addWidget(PropertyIntInputMenuItem(propertyName=sub_name, type = sub_type))
+                                
         self.advancedLabel = CaptionLabel("Advanced Paramaters")
         self.advancedLabel.setObjectName("advancedParametersLabel")
         self.advancedLabel.setStyleSheet("""#advancedParametersLabel{
